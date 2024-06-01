@@ -107,7 +107,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SigninScreen()));
+                                builder: (context) => SignInScreen()));
                       } on FirebaseAuthException catch (e) {
                         if (e.code == "weak-password") {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -5,7 +5,7 @@ import 'package:todo/presentation/screens/signup_screen.dart';
 import 'package:todo/presentation/utility/cust_widgets/cus_buttons.dart';
 import 'package:todo/presentation/utility/cust_widgets/cus_textfield_style.dart';
 
-class SigninScreen extends StatelessWidget {
+class SignInScreen extends StatelessWidget {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
   FirebaseAuth fireAuth = FirebaseAuth.instance;
