@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/presentation/screens/home_screen.dart';
 import 'package:todo/presentation/screens/signup_screen.dart';
 import 'package:todo/presentation/utility/cust_widgets/cus_buttons.dart';
@@ -7,8 +8,10 @@ import 'package:todo/presentation/utility/cust_widgets/cus_textfield_style.dart'
 
 class SignInScreen extends StatelessWidget {
   TextEditingController emailController = TextEditingController();
+
   TextEditingController passController = TextEditingController();
   FirebaseAuth fireAuth = FirebaseAuth.instance;
+  static const String User_ID_Key = 'uid';
 
   @override
   Widget build(BuildContext context) {
@@ -56,17 +59,24 @@ class SignInScreen extends StatelessWidget {
                   SizedBox(
                       width: 120,
                       child: CusButtons(
-                          onTap: () async {
+                          onTap: () {
                             try {
-                              var cred =
-                                  await fireAuth.signInWithEmailAndPassword(
-                                      email: emailController.text,
-                                      password: passController.text);
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeScreen()));
-                              print(cred);
+                              fireAuth
+                                  .signInWithEmailAndPassword(
+                                      email: emailController.text.toString(),
+                                      password: passController.text.toString())
+                                  .then((onValue) async {
+                                ///Shared Preference
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+
+                                ///set Uid in shared Preference
+                                prefs.setString(User_ID_Key, onValue.user!.uid);
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => HomeScreen()));
+                              });
                             } on FirebaseAuthException catch (e) {
                               if (e.code == "user-not-found") {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
