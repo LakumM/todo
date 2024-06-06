@@ -39,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     colRefs = firestore.collection('user').doc(uId).collection('todos');
     return Scaffold(
+      backgroundColor: Color(0xffcdbbe1),
       appBar: AppBar(
         title: Text(
           'TODO',
@@ -49,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
               fontSize: 24),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xfffdb07d),
+        backgroundColor: Color(0xff90006f),
       ),
       body: StreamBuilder(
         stream: colRefs.snapshots(),
@@ -70,14 +71,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 var mData = snapshot.data!.docs[index].data();
                 var eachModel =
                     TodoModel.formDoc(mData as Map<String, dynamic>);
+
+                /// Main Container
                 return Container(
-                  margin: EdgeInsets.symmetric(vertical: 4, horizontal: 11),
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    BoxShadow(
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        color: Color.fromARGB(9, 9, 9, 9)),
-                  ]),
+                  margin: EdgeInsets.only(top: 10, right: 12, left: 12),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      color: Colors.transparent,
+                      boxShadow: [
+                        BoxShadow(
+                            blurStyle: BlurStyle.solid,
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            color: Colors.transparent),
+                      ]),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -99,11 +106,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(eachModel.title),
+                            Text(
+                              eachModel.title,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  fontFamily: Assets.fontsMontserratRegular),
+                            ),
                             SizedBox(
                               height: 10,
                             ),
-                            Text(eachModel.desc),
+                            Text(
+                              eachModel.desc,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                  fontFamily: Assets.fontsMontserratRegular),
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [Text('Complete'), Text('Complete')],
@@ -114,8 +133,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       /// Edit & Delete Button
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           IconButton(
+                              iconSize: 28,
                               onPressed: () {
                                 Navigator.push(
                                     context,
@@ -123,10 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         builder: (context) => TaskScreen()));
                               },
                               icon: Icon(Icons.edit)),
-                          SizedBox(
-                            height: 10,
-                          ),
                           IconButton(
+                              iconSize: 28,
                               onPressed: () {
                                 colRefs
                                     .doc(snapshot.data!.docs[index].id)

@@ -6,8 +6,13 @@ class CusTextfield extends StatelessWidget {
   var controller;
   String htext;
   String lText;
+  Color fColor;
 
-  CusTextfield({required this.controller, this.htext = "", this.lText = ""});
+  CusTextfield(
+      {required this.controller,
+      this.htext = "",
+      this.lText = "",
+      this.fColor = const Color(0xFFDAB5D8)});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,7 @@ class CusTextfield extends StatelessWidget {
             style: TextStyle(color: Color(0xff90006f)),
           ),
           filled: true,
-          fillColor: Color(0xFFDAB5D8),
+          fillColor: fColor,
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(21),
               borderSide: BorderSide.none),
