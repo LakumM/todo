@@ -10,6 +10,7 @@ class UserModel {
       required this.mobile,
       required this.city});
 
+  ///Doc To model
   factory UserModel.fromDoc(Map<String, dynamic> doc) {
     return UserModel(
         name: doc['name'],
@@ -18,6 +19,7 @@ class UserModel {
         city: doc['city']);
   }
 
+  ///Model To Map
   Map<String, dynamic> todoc() {
     return {'name': name, 'email': email, 'mobile': mobile, 'city': city};
   }

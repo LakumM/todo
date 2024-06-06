@@ -30,18 +30,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   ///Collection reference
   late CollectionReference colRefs;
-  String? uID;
-
-  @override
-  void initState() {
-    super.initState();
-    getuserid();
-  }
-
-  getuserid() async {
-    var prefs = await SharedPreferences.getInstance();
-    uID = prefs.getString(SignInScreen.User_ID_Key);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +103,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         mobileNoController.text.isEmpty &&
                         cityController.text.isEmpty &&
                         passController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please Fillep all details')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Please Fill-up all details')));
                     }
                     if (passController.text != conPassController) {
                       /// Check user Credentials
@@ -134,17 +122,16 @@ class _SignupScreenState extends State<SignupScreen> {
                             city: cityController.text);
                         firestore
                             .collection('user')
-                            .add(userDetail.todoc())
+                            .doc(cred.user!.uid)
+                            .set(userDetail.todoc())
                             .then((onValue) {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignInScreen()));
+                          Navigator.pop(context);
                         });
                       } on FirebaseAuthException catch (e) {
                         if (e.code == "weak-password") {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('you enter weak Password')));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('you enter weak Password')));
                           print(e.code);
                         } else if (e.code == "email-already-in-use") {
                           ScaffoldMessenger.of(context).showSnackBar(

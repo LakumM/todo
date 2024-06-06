@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/presentation/screens/home_screen.dart';
@@ -12,6 +13,7 @@ class SignInScreen extends StatelessWidget {
   TextEditingController passController = TextEditingController();
   FirebaseAuth fireAuth = FirebaseAuth.instance;
   static const String User_ID_Key = 'uid';
+  static const String User_Email_Key = 'email';
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +73,7 @@ class SignInScreen extends StatelessWidget {
                                     await SharedPreferences.getInstance();
 
                                 ///set Uid in shared Preference
+                                prefs.setString("email", emailController.text);
                                 prefs.setString(User_ID_Key, onValue.user!.uid);
                                 Navigator.pushReplacement(
                                     context,

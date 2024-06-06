@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/domain/model/todo_model.dart';
+import 'package:todo/generated/assets.dart';
 import 'package:todo/presentation/screens/signin_Screen.dart';
 import 'package:todo/presentation/screens/task_screen.dart';
 
@@ -14,9 +18,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? uId;
+  String? email;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   late CollectionReference colRefs;
-
+  bool? ischecked = false;
   @override
   void initState() {
     super.initState();
@@ -35,8 +40,16 @@ class _HomeScreenState extends State<HomeScreen> {
     colRefs = firestore.collection('user').doc(uId).collection('todos');
     return Scaffold(
       appBar: AppBar(
-        title: Text('TODO'),
+        title: Text(
+          'TODO',
+          style: TextStyle(
+              color: Color(0xFFFFFFFF),
+              fontWeight: FontWeight.w700,
+              fontFamily: Assets.fontsMontserratRegular,
+              fontSize: 24),
+        ),
         centerTitle: true,
+        backgroundColor: Color(0xfffdb07d),
       ),
       body: StreamBuilder(
         stream: colRefs.snapshots(),
@@ -57,9 +70,78 @@ class _HomeScreenState extends State<HomeScreen> {
                 var mData = snapshot.data!.docs[index].data();
                 var eachModel =
                     TodoModel.formDoc(mData as Map<String, dynamic>);
-                return ListTile(
-                  title: Text(eachModel.title),
-                  subtitle: Text(eachModel.desc),
+                return Container(
+                  margin: EdgeInsets.symmetric(vertical: 4, horizontal: 11),
+                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                    BoxShadow(
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        color: Color.fromARGB(9, 9, 9, 9)),
+                  ]),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ///Chaked Box
+                      Checkbox(
+                          activeColor: Colors.blue,
+                          checkColor: Colors.red,
+                          value: mData['isCompleted'],
+                          onChanged: (bool? value) {
+                            setState(() {
+                              mData['isCompleted'] = value!;
+                            });
+                            log(mData['isCompleted'].toString());
+                          }),
+
+                      /// title & Description
+                      Container(
+                        width: MediaQuery.sizeOf(context).width * 0.7,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(eachModel.title),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(eachModel.desc),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [Text('Complete'), Text('Complete')],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      /// Edit & Delete Button
+                      Column(
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => TaskScreen()));
+                              },
+                              icon: Icon(Icons.edit)),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                colRefs
+                                    .doc(snapshot.data!.docs[index].id)
+                                    .delete()
+                                    .then((onValue) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('done')));
+                                });
+                                setState(() {});
+                              },
+                              icon: Icon(Icons.delete)),
+                        ],
+                      )
+                    ],
+                  ),
                 );
               },
             );
@@ -68,6 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
           return Container();
         },
       ),
+
+      /// Goto Add Todo Page
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
