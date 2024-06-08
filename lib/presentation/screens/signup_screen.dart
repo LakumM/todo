@@ -111,7 +111,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SnackBar(
                                 content: Text('Please Fill-up all details')));
                       }
-                      if (passController.text != conPassController.text) {
+                      if (passController.text == conPassController.text) {
                         /// Check user Credentials
                         try {
                           var cred =
@@ -130,38 +130,46 @@ class _SignupScreenState extends State<SignupScreen> {
                               .doc(cred.user!.uid)
                               .set(userDetail.todoc())
                               .then((onValue) {
+                            nameController.clear();
+                            emailController.clear();
+                            mobileNoController.clear();
+                            cityController.clear();
+                            passController.clear();
+                            conPassController.clear();
                             Navigator.pop(context);
                           });
                         } on FirebaseAuthException catch (e) {
+                          /// If Password Is To-Weak
                           if (e.code == "weak-password") {
-                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content: Text('you enter weak Password')));
-                          } else if (e.code == "email-already-in-use") {
-                            // ignore: use_build_context_synchronously
+                          }
+
+                          /// If Email is Already exist
+                          else if (e.code == "email-already-in-use") {
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content: Text('Email Allredy Exist')));
+                            emailController.clear();
                           }
                         } catch (e) {
                           // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Error')));
                         }
-                      } else {
+                      }
+
+                      ///If Confirm Password Not match
+                      else {
+                        passController.clear();
+                        conPassController.clear();
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                                 content: Text('Confirm Pasword not match')));
                       }
 
                       /// TextField Clear
-                      nameController.clear();
-                      emailController.clear();
-                      mobileNoController.clear();
-                      cityController.clear();
-                      passController.clear();
-                      conPassController.clear();
                       setState(() {});
                     },
                     name: 'Create Account',
