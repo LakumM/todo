@@ -85,17 +85,12 @@ class _TaskScreenState extends State<TaskScreen> {
                     borderRadius: BorderRadius.circular(21),
                     borderSide: const BorderSide(color: Color(0xfff9e5F5))),
               )),
-
-          /*CusTextfield(
-            controller: descController,
-            fColor: Colors.white,
-            lText: 'Description',
-          ),*/
           mSize(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              SizedBox(
+              mSize(
+                height: 40,
                 width: 120,
                 child: CusButtons(
                     backColor: Color(0xffb2711a),
@@ -106,6 +101,7 @@ class _TaskScreenState extends State<TaskScreen> {
                             desc: descController.text,
                             title: titleController.text,
                             isCompleted: false,
+                            isCompletedAt: '',
                             creatdAt: DateTime.now()
                                 .millisecondsSinceEpoch
                                 .toString());
@@ -120,14 +116,16 @@ class _TaskScreenState extends State<TaskScreen> {
                     },
                     name: 'Add'),
               ),
-              SizedBox(
-                  width: 120,
-                  child: CusButtons(
-                      backColor: Color(0xffb2711a),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      name: 'Cancle')),
+              mSize(
+                height: 40,
+                width: 120,
+                child: CusButtons(
+                    backColor: Color(0xffb2711a),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    name: 'Cancle'),
+              )
             ],
           ),
         ]),
@@ -135,9 +133,11 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  Widget mSize({double height = 16}) {
+  Widget mSize({double height = 16, double? width, Widget? child}) {
     return SizedBox(
       height: height,
+      width: width,
+      child: child,
     );
   }
 }

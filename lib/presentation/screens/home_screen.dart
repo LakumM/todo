@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? email;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   late CollectionReference colRefs;
+
   @override
   void initState() {
     super.initState();
@@ -101,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(22),
                       color: mData['isCompleted']
-                          ? Color(0xFFFC7272)
+                          ? Color(0xFF2EA407)
                           : const Color(0X90ffffff),
                       boxShadow: const [
                         BoxShadow(
@@ -119,8 +120,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           checkColor: Colors.red,
                           value: mData['isCompleted'],
                           onChanged: (newValue) {
-                            colRefs.doc(snapshot.data!.docs[index].id).update(
-                                {"isCompleted": newValue}).then((value) {});
+                            var isCompleted = newValue!
+                                ? DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString()
+                                : "";
+                            colRefs.doc(snapshot.data!.docs[index].id).update({
+                              "isCompleted": newValue,
+                              'isCompletedAt': isCompleted
+                            }).then((value) {});
                             setState(() {});
                           }),
                       Stack(
@@ -169,11 +177,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 5),
-                                      child: Text(dtFormat.format(DateTime
-                                          .fromMillisecondsSinceEpoch(int.parse(
-                                              eachModel.creatdAt.toString())))),
+                                      child: !mData['isCompleted']
+                                          ? Text(dtFormat.format(
+                                              DateTime.fromMillisecondsSinceEpoch(
+                                                  int.parse(eachModel.creatdAt
+                                                      .toString()))))
+                                          : Text(dtFormat.format(
+                                              DateTime.fromMillisecondsSinceEpoch(
+                                                  int.parse(eachModel
+                                                      .isCompletedAt
+                                                      .toString())))),
                                     ),
-                                    const Text('Complete')
                                   ],
                                 ),
                               ],
