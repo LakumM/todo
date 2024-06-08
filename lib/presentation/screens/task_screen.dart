@@ -20,12 +20,15 @@ class _TaskScreenState extends State<TaskScreen> {
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
   String? uId;
   late CollectionReference calRefs;
+
+  ///init State
   @override
   void initState() {
     super.initState();
     getUid();
   }
 
+  /// Get Uid To Firebase FireStore though Login_Page
   getUid() async {
     SharedPreferences prefes = await SharedPreferences.getInstance();
     uId = prefes.getString(SignInScreen.User_ID_Key);
@@ -58,13 +61,17 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
           mSize(),
           TextFormField(
+              style: const TextStyle(
+                  color: Color(0xff90006f),
+                  fontWeight: FontWeight.w400,
+                  fontSize: 18),
               controller: descController,
-              maxLines: 3,
+              maxLines: 2,
               maxLength: 50,
               decoration: InputDecoration(
                 label: const Text(
                   'Description',
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.start,
                   style: TextStyle(
                     color: Color(0xff90006f),
                   ),
@@ -91,6 +98,7 @@ class _TaskScreenState extends State<TaskScreen> {
               SizedBox(
                 width: 120,
                 child: CusButtons(
+                    backColor: Color(0xffb2711a),
                     onTap: () {
                       if (titleController.text.isNotEmpty &&
                           descController.text.isNotEmpty) {
@@ -115,6 +123,7 @@ class _TaskScreenState extends State<TaskScreen> {
               SizedBox(
                   width: 120,
                   child: CusButtons(
+                      backColor: Color(0xffb2711a),
                       onTap: () {
                         Navigator.pop(context);
                       },

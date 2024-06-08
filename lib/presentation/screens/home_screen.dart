@@ -139,6 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fontFamily:
                                           Assets.fontsMontserratRegular),
                                 ),
+                                SizedBox(
+                                  height: 5,
+                                ),
                                 Text(
                                   eachModel.desc,
                                   style: const TextStyle(
@@ -147,15 +150,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fontFamily:
                                           Assets.fontsMontserratRegular),
                                 ),
+                                SizedBox(
+                                  height: 10,
+                                ),
 
                                 /// time Stamp
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Text(dtFormat.format(DateTime
-                                        .fromMillisecondsSinceEpoch(int.parse(
-                                            eachModel.creatdAt.toString())))),
+                                    ClipOval(
+                                      child: mData['isCompleted']
+                                          ? Container()
+                                          : Container(
+                                              height: 10,
+                                              width: 10,
+                                              color: Colors.green,
+                                            ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: Text(dtFormat.format(DateTime
+                                          .fromMillisecondsSinceEpoch(int.parse(
+                                              eachModel.creatdAt.toString())))),
+                                    ),
                                     const Text('Complete')
                                   ],
                                 ),
@@ -165,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
 
-                      /// Edit & Delete Button
+                      /// Edit Button
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -178,8 +195,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                         builder: (context) =>
                                             const TaskScreen()));
                               },
-                              icon: const Icon(Icons.edit)),
+                              icon: Icon(
+                                Icons.edit,
+                                color: mData['isCompleted']
+                                    ? Colors.white
+                                    : Colors.blueAccent,
+                              )),
+
+                          /// Delete Todos
                           IconButton(
+                              color: mData['isCompleted']
+                                  ? Colors.white
+                                  : Colors.red.shade500,
                               iconSize: 28,
                               onPressed: () {
                                 colRefs
