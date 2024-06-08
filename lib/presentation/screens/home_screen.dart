@@ -1,12 +1,10 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/domain/model/todo_model.dart';
 import 'package:todo/generated/assets.dart';
-import 'package:todo/presentation/screens/signin_Screen.dart';
+import 'package:todo/presentation/screens/signin_screen.dart';
 import 'package:todo/presentation/screens/task_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String? email;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   late CollectionReference colRefs;
-  bool? ischecked = false;
   @override
   void initState() {
     super.initState();
@@ -35,13 +32,34 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
+  var dtFormat = DateFormat.yMd().add_jm();
   @override
   Widget build(BuildContext context) {
     colRefs = firestore.collection('user').doc(uId).collection('todos');
     return Scaffold(
-      backgroundColor: Color(0xffcdbbe1),
+      backgroundColor: const Color(0xD3FFD6D6),
       appBar: AppBar(
-        title: Text(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: IconButton(
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.getString(SignInScreen.User_Email_Key);
+                prefs.remove(SignInScreen.User_Email_Key);
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => SignInScreen()));
+                setState(() {});
+              },
+              icon: Icon(
+                Icons.logout_outlined,
+                size: 32,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+        title: const Text(
           'TODO',
           style: TextStyle(
               color: Color(0xFFFFFFFF),
@@ -50,20 +68,24 @@ class _HomeScreenState extends State<HomeScreen> {
               fontSize: 24),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xff90006f),
+        backgroundColor: const Color(0xffb2711a),
       ),
       body: StreamBuilder(
         stream: colRefs.snapshots(),
         builder: (context, snapshot) {
+          /// connection is waiting mode
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
+
+          /// has any error
           if (snapshot.hasError) {
             return Text("Error ${snapshot.error}");
           }
 
+          ///Data has Successes
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.size,
@@ -74,61 +96,73 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 /// Main Container
                 return Container(
-                  margin: EdgeInsets.only(top: 10, right: 12, left: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  margin: const EdgeInsets.only(top: 10, right: 12, left: 12),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(22),
-                      color: Colors.transparent,
-                      boxShadow: [
+                      color: mData['isCompleted']
+                          ? Color(0xFFFC7272)
+                          : const Color(0X90ffffff),
+                      boxShadow: const [
                         BoxShadow(
                             blurStyle: BlurStyle.solid,
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            color: Colors.transparent),
+                            spreadRadius: 3,
+                            blurRadius: 1,
+                            color: Colors.white30),
                       ]),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ///Chaked Box
                       Checkbox(
-                          activeColor: Colors.blue,
+                          activeColor: Color(0xb6dbe2ff),
                           checkColor: Colors.red,
                           value: mData['isCompleted'],
-                          onChanged: (bool? value) {
-                            setState(() {
-                              mData['isCompleted'] = value!;
-                            });
-                            log(mData['isCompleted'].toString());
+                          onChanged: (newValue) {
+                            colRefs.doc(snapshot.data!.docs[index].id).update(
+                                {"isCompleted": newValue}).then((value) {});
+                            setState(() {});
                           }),
+                      Stack(
+                        children: [
+                          /// title & Description
+                          SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.64,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  eachModel.title,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18,
+                                      fontFamily:
+                                          Assets.fontsMontserratRegular),
+                                ),
+                                Text(
+                                  eachModel.desc,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      fontFamily:
+                                          Assets.fontsMontserratRegular),
+                                ),
 
-                      /// title & Description
-                      Container(
-                        width: MediaQuery.sizeOf(context).width * 0.7,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              eachModel.title,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18,
-                                  fontFamily: Assets.fontsMontserratRegular),
+                                /// time Stamp
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(dtFormat.format(DateTime
+                                        .fromMillisecondsSinceEpoch(int.parse(
+                                            eachModel.creatdAt.toString())))),
+                                    const Text('Complete')
+                                  ],
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              eachModel.desc,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  fontFamily: Assets.fontsMontserratRegular),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [Text('Complete'), Text('Complete')],
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
 
                       /// Edit & Delete Button
@@ -141,9 +175,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => TaskScreen()));
+                                        builder: (context) =>
+                                            const TaskScreen()));
                               },
-                              icon: Icon(Icons.edit)),
+                              icon: const Icon(Icons.edit)),
                           IconButton(
                               iconSize: 28,
                               onPressed: () {
@@ -152,11 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .delete()
                                     .then((onValue) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('done')));
+                                      const SnackBar(content: Text('done')));
                                 });
                                 setState(() {});
                               },
-                              icon: Icon(Icons.delete)),
+                              icon: const Icon(Icons.delete)),
                         ],
                       )
                     ],
@@ -165,7 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             );
           }
-          ;
           return Container();
         },
       ),
@@ -173,10 +207,10 @@ class _HomeScreenState extends State<HomeScreen> {
       /// Goto Add Todo Page
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => TaskScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const TaskScreen()));
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

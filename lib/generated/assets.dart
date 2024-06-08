@@ -5,4 +5,8 @@ class Assets {
   static const String fontsMontserratRegular =
       'assest/fonts/Montserrat-Regular.ttf';
   static const String imagesImgFront = 'assest/images/img_front.png';
+  static const String imagesImgFrontTodo = 'assest/images/img_front_todo.jpg';
+  static const String imagesImgFrontTodo1 = 'assest/images/img_front_todo1.png';
+  static const String imagesImgStationaryBac =
+      'assest/images/img_stationary_bac.jpg';
 }

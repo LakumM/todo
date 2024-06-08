@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/domain/model/todo_model.dart';
 import 'package:todo/generated/assets.dart';
-import 'package:todo/presentation/screens/signin_Screen.dart';
+import 'package:todo/presentation/screens/signin_screen.dart';
 import 'package:todo/presentation/utility/cust_widgets/cus_buttons.dart';
 import 'package:todo/presentation/utility/cust_widgets/cus_textfield_style.dart';
 
 class TaskScreen extends StatefulWidget {
+  const TaskScreen({super.key});
+
   @override
   State<TaskScreen> createState() => _TaskScreenState();
 }
@@ -34,9 +36,9 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     calRefs = fireStore.collection('user').doc(uId).collection('todos');
     return Scaffold(
-      backgroundColor: Color(0xffcdbbe1),
+      backgroundColor: const Color(0xD3FFD6D6),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Add Your Task',
           style: TextStyle(
               color: Color(0xffffffff),
@@ -44,22 +46,44 @@ class _TaskScreenState extends State<TaskScreen> {
               fontSize: 26),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xff90006f),
+        backgroundColor: const Color(0xffb2711a),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         child: Column(children: [
-          CusTextfield(
+          CusTextField(
             controller: titleController,
             fColor: Colors.white,
             lText: 'Title',
           ),
           mSize(),
-          CusTextfield(
+          TextFormField(
+              controller: descController,
+              maxLines: 3,
+              maxLength: 50,
+              decoration: InputDecoration(
+                label: const Text(
+                  'Description',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xff90006f),
+                  ),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(21),
+                    borderSide: BorderSide.none),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(21),
+                    borderSide: const BorderSide(color: Color(0xfff9e5F5))),
+              )),
+
+          /*CusTextfield(
             controller: descController,
             fColor: Colors.white,
             lText: 'Description',
-          ),
+          ),*/
           mSize(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -73,19 +97,28 @@ class _TaskScreenState extends State<TaskScreen> {
                         TodoModel todoModel = TodoModel(
                             desc: descController.text,
                             title: titleController.text,
-                            isCompleted: true);
+                            isCompleted: false,
+                            creatdAt: DateTime.now()
+                                .millisecondsSinceEpoch
+                                .toString());
                         calRefs.add(todoModel.toDoc());
 
                         Navigator.pop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Please fill all details')));
+                            const SnackBar(
+                                content: Text('Please fill all details')));
                       }
                     },
                     name: 'Add'),
               ),
               SizedBox(
-                  width: 120, child: CusButtons(onTap: () {}, name: 'Cancle')),
+                  width: 120,
+                  child: CusButtons(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      name: 'Cancle')),
             ],
           ),
         ]),

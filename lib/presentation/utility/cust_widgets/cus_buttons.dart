@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class CusButtons extends StatelessWidget {
   VoidCallback onTap;
   String name;
@@ -8,7 +8,8 @@ class CusButtons extends StatelessWidget {
   Color backColor;
 
   CusButtons(
-      {required this.onTap,
+      {super.key,
+      required this.onTap,
       required this.name,
       this.backColor = const Color(0xff90006f),
       this.forColor = Colors.white});
@@ -26,7 +27,7 @@ class CusButtons extends StatelessWidget {
       onPressed: onTap,
       child: Text(
         name,
-        style: TextStyle(
+        style: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0.3),
       ),
     );
